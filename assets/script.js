@@ -18,11 +18,15 @@ function initPage() {
         searchHistory.push (searchTerm);
         localStorage.setItem ("search",JSON.stringify(searchHistory));
         renderSearchHistory();
+
+        
     })
     clearEl.addEventListener("click",function() {
         searchHistory = [];
         renderSearchHistory();
     })
+
+
 
     const APIKey = "b31128cf2f45a7d81447683eba5469c1";
         function getWeather(cityName) {
@@ -90,9 +94,6 @@ function initPage() {
         historyEl.innerHTML = "";
         for (let i=0; i<searchHistory.length; i++) {
             const historyItem = document.createElement("input");
-            historyItem.setAttribute("type","text");
-            historyItem.setAttribute("readonly",true);
-            historyItem.setAttribute("class", "form-control d-block bg-white");
             historyItem.setAttribute("value", searchHistory[i]);
             historyItem.addEventListener("click",function() {
                 getWeather(historyItem.value);
@@ -104,5 +105,6 @@ function initPage() {
     if (searchHistory.length > 0) {
         getWeather(searchHistory[searchHistory.length - 1]);
     }
+
 
 initPage();
