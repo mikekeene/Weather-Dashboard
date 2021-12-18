@@ -12,24 +12,10 @@ function initPage() {
     let searchHistory = JSON.parse(localStorage.getItem ( "search")) || [];
     console.log (searchHistory);
     
-    searchEl.addEventListener("click",function() {
-        const searchTerm = inputEl.value;
-        getWeather(searchTerm);
-        searchHistory.push (searchTerm);
-        localStorage.setItem ("search",JSON.stringify(searchHistory));
-        renderSearchHistory();
-
-        
-    })
-    clearEl.addEventListener("click",function() {
-        searchHistory = [];
-        renderSearchHistory();
-    })
 
 
-
-    const APIKey = "b31128cf2f45a7d81447683eba5469c1";
-        function getWeather(cityName) {
+    const APIKey = "b31128cf2f45a7d81447683eba5469c1";  
+    function getWeather(cityName) {
             let queryURL = "https://api.openweathermap.org/data/2.5/weather?q=" +  cityName +  "&appid="  + APIKey;
             axios.get(queryURL)
             .then(function(response){
@@ -43,9 +29,9 @@ function initPage() {
             let weatherPic = response.data.weather[0].icon;
             currentPicEl.setAttribute ("src","https://openweathermap.org/img/wn/" +  weatherPic + "@2x.png");
             currentPicEl.setAttribute ("alt",response.data.weather[0].description);
-            currentTempEl.innerHTML =  "Temperature: "  + k2f(response.data.main.temp) + " &#176F";
-            currentHumidityEl.innerHTML =  "Humidity: "  + response.data.main.humidity + "%";
-            currentWindEl.innerHTML =  "Wind Speed: "  + response.data.wind.speed + " MPH";
+            currentTempEl.innerHTML =  "Temperature:" + k2f(response.data.main.temp) + " &#176F";
+            currentHumidityEl.innerHTML =  "Humidity:" + response.data.main.humidity + "%";
+            currentWindEl.innerHTML =  "Wind Speed:" + response.data.wind.speed + " MPH";
         let lat =  response.data.coord.lat;
         let lon =  response.data.coord.lon;
         let UVQueryURL =  "https://api.openweathermap.org/data/2.5/uvi/forecast?lat=" + lat + "&lon=" + lon + "&appid=" + APIKey + "&cnt=1";
@@ -58,7 +44,8 @@ function initPage() {
             currentUVEl.append(UVIndex);
         });
         let cityID = response.data.id;
-        let forecastQueryURL = "https://api.openweathermap.org/data/2.5/forecast?id=" + cityID + "&appid=" + APIKey;
+        let forecastQueryURL = "https://api.openweathermap.org/data/2.5/forecast?id=" 
+            + cityID + "&appid=" + APIKey;
         axios.get(forecastQueryURL)
         .then(function(response){
             console.log(response);
@@ -89,22 +76,38 @@ function initPage() {
         });  
     }
 
-    }
-    function renderSearchHistory() {
-        historyEl.innerHTML = "";
-        for (let i=0; i<searchHistory.length; i++) {
-            const historyItem = document.createElement("input");
-            historyItem.setAttribute("value", searchHistory[i]);
-            historyItem.addEventListener("click",function() {
-                getWeather(historyItem.value);
-            })
-            historyEl.append(historyItem);
-        }
-    }
-    renderSearchHistory();
-    if (searchHistory.length > 0) {
-        getWeather(searchHistory[searchHistory.length - 1]);
-    }
+    function k2f(K) {return Math.floor((K - 273.15) *1.8 +32);}
+    searchEl.addEventListener("click",function() {
+        const searchTerm = inputEl.value;
+        getWeather(searchTerm);
+        searchHistory.push(searchTerm);
+        localStorage.setItem("search",JSON.stringify(searchHistory));
+        renderSearchHistory();
+    })
+    clearEl.addEventListener("click",function() {
+        searchHistory = [];
+        renderSearchHistory();
+    })
 
+    function renderSearchHistory() {
+            historyEl.innerHTML = "";
+            for (let i=0; i<searchHistory.length; i++) {
+                const historyItem = document.createElement("input");
+                historyItem.setAttribute("value", searchHistory[i]);
+                historyItem.setAttribute("type","text");
+                historyItem.setAttribute("readonly",true);
+                historyItem.setAttribute("class", "form-control d-block bg-white");
+                historyItem.addEventListener("click",function() {
+                    getWeather(historyItem.value);
+                })
+                historyEl.append(historyItem);
+            }
+        }
+        renderSearchHistory();
+        if (searchHistory.length > 0) {
+            getWeather(searchHistory[searchHistory.length - 1]);
+        }
+        
+    }
 
 initPage();
